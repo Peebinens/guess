@@ -236,11 +236,11 @@ public:
                                     }
                                     i_son.key[i_son.now_size] = next_node.key[0];
                                     i_son.son[i_son.now_size] = next_node.son[0];
+                                    next_node.now_size--;
                                     for(int jj = 0; jj < next_node.now_size; jj++){
                                         next_node.key[jj] = next_node.key[jj + 1];
                                         next_node.son[jj] = next_node.son[jj + 1];
                                     }
-                                    next_node.now_size--;
                                     i_son.now_size++;
                                     fa.key[i] = next_node.key[0];
                                     node_river.update(next_node,fa.son[i+1]);
@@ -252,9 +252,8 @@ public:
                                         i_son.key[jj] = i_son.key[jj - 1];
                                         i_son.son[jj] = i_son.son[jj - 1];
                                     }
-                                    i_son.key[0] = pre_node.key[pre_node.now_size-1];
-                                    i_son.son[0] = pre_node.son[pre_node.now_size-1];
-                                    pre_node.now_size--;
+                                    i_son.key[0] = pre_node.key[--pre_node.now_size];
+                                    i_son.son[0] = pre_node.son[pre_node.now_size];
                                     i_son.now_size++;
                                     fa.key[i-1] = i_son.key[0];
                                     node_river.update(pre_node,fa.son[i-1]);
@@ -273,13 +272,14 @@ public:
                                     i_son.now_size += next_node.now_size;
                                     node_river.Delete(fa.son[i+1]);
                                     fa.now_size--;
-                                    fa.key[i] = i_son.key[i+1];
+                                    fa.key[i] = fa.key[i+1];
                                     for(int jj = i + 1; jj < fa.now_size; jj++){
                                         fa.key[jj] = fa.key[jj + 1];
                                         fa.son[jj] = fa.son[jj + 1];
                                     }
                                     fa.son[fa.now_size] = fa.son[fa.now_size + 1];
                                     node_river.update(i_son,fa.son[i]);
+                                    node_river.update(fa,pos);
                                 }
                                 else{
                                     for(int jj = 0; jj < j; jj++){
@@ -300,6 +300,7 @@ public:
                                     }
                                     fa.son[fa.now_size] = fa.son[fa.now_size + 1];
                                     node_river.update(pre_node,fa.son[i-1]);
+                                    node_river.update(fa,pos);
                                 }
                                 return;
                             }
@@ -414,11 +415,6 @@ public:
             return;
         }
         if(i_son.now_size< ((M+1)>>1) - 1){
-            if(i_son.now_size == 0){
-                root = i_son.son[0];
-                node_river.Delete(pos);
-                return;
-            }
             BPT_node next_node,pre_node;
             if(i!=fa.now_size) node_river.read(next_node,fa.son[i+1]);
             if(i!=0) node_river.read(pre_node,fa.son[i-1]);
@@ -493,7 +489,6 @@ public:
             }
         }
         else node_river.update(fa,pos);
-        return;
     }
 
     void remove(const std::pair<Key, T> &val) {
