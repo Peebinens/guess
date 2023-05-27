@@ -539,36 +539,6 @@ public:
         delete_node(val.first,val.second,rt,root);
     }
 
-    void show() {
-        std::cout<<_size<<std::endl;
-        printf("sum: %d\n",show_node(root));
-    }
-
-    int show_node(int pos){
-        static int ans = 0;
-        BPT_node rt;
-        node_river.read(rt,pos);
-
-        if(rt.is_leaf) {
-            std::cout << "leaf: \n";
-            std::cout << "pos: " << pos << " pre: " << rt.pre << " next: " << rt.next << " now_size: " << rt.now_size << std::endl;
-            for(int i = 0; i < rt.now_size; i++){
-                std::cout << rt.key[i] << " " ;
-            }
-            ans+=rt.now_size;
-            std::cout << std::endl;
-            return ans;
-        }
-        std::cout << "pos: " << pos << " pre: " << rt.pre << " next: " << rt.next << " now_size: " << rt.now_size << std::endl;
-        for(int i = 0; i < rt.now_size; i++){
-            std::cout << rt.key[i] << " " ;
-        }
-        std::cout << std::endl;
-        for(int i = 0; i <= rt.now_size; i++){
-            if(rt.son[i]) show_node(rt.son[i]);
-        }
-        return ans;
-    }
     void clear(){}
 
     void modify(const std::pair<Key, T> &val, T new_val) {}
