@@ -6,6 +6,7 @@
 template<class Key, class T, int M = 100, int L = 100>
 class BPTree {
 private:
+
     struct BPT_node{
         bool is_leaf;
         int son[L + 1] = {0};
@@ -13,6 +14,7 @@ private:
         Key key[M + 1];
         BPT_node():is_leaf(false),now_size(0),next(0),pre(0){};
     };
+
     struct val_node{
         int next = 0;
         T val;
@@ -21,6 +23,7 @@ private:
     int root;
     int _size;
     MemoryRiver<BPT_node,4> node_river;
+
     MemoryRiver<val_node> val_river;
 
     int upper_key(const Key &ind, const BPT_node &rt){
@@ -157,8 +160,7 @@ public:
         rt.now_size++;
         if(rt.now_size == M){
             BPT_node new_node;
-            int mid = (rt.now_size + 1)>>1; //2
-            //前2后2
+            int mid = (rt.now_size + 1)>>1; 
             for(int j = mid; j < M; j++){
                 new_node.key[j-mid] = rt.key[j];
                 new_node.son[j-mid] = rt.son[j];
@@ -326,11 +328,6 @@ public:
         delete_node(ind,val,i_son,fa.son[i]);
         if(pos == root){
             if(i_son.now_size< ((M+1)>>1) - 1){
-                if(i_son.now_size == 0){
-                    root = i_son.son[0];
-                    node_river.Delete(pos);
-                    return;
-                }
                 BPT_node next_node,pre_node;
                 if(i!=fa.now_size) node_river.read(next_node,fa.son[i+1]);
                 if(i!=0) node_river.read(pre_node,fa.son[i-1]);
@@ -532,6 +529,10 @@ public:
             return;
         }
         delete_node(val.first,val.second,rt,root);
+        if(rt.now_size == 0){
+            node_river.Delete(root);
+            root = rt.son[0];
+        }
     }
 
     void clear(){}
