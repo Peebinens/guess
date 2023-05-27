@@ -13,7 +13,6 @@ private:
         Key key[M + 1];
         BPT_node():is_leaf(false),now_size(0),next(0),pre(0){};
     };
-
     struct val_node{
         int next = 0;
         T val;
@@ -22,7 +21,6 @@ private:
     int root;
     int _size;
     MemoryRiver<BPT_node,4> node_river;
-
     MemoryRiver<val_node> val_river;
 
     int upper_key(const Key &ind, const BPT_node &rt){
@@ -94,9 +92,6 @@ public:
             new_node.son[1] = ret.first;
             new_node.next = new_node.pre = 0;
             root = node_river.write(new_node);
-//            node_river.write_info(root,3);
-//            node_river.write_info(_size,4);
-//            exit(0);
         }
     }
 
