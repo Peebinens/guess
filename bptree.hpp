@@ -421,7 +421,6 @@ public:
                                         fa.key[i] = next_node.key[0];
                                         node_river.update(next_node,fa.son[i+1]);
                                         node_river.update(i_son,fa.son[i]);
-                                        node_river.update(fa,pos);
                                     }
                                     else if(i!=0 && pre_node.now_size > ((L+1)>>1)){
                                         for(int jj = j; jj > 0; jj--){
@@ -434,7 +433,6 @@ public:
                                         fa.key[i-1] = i_son.key[0];
                                         node_river.update(pre_node,fa.son[i-1]);
                                         node_river.update(i_son,fa.son[i]);
-                                        node_river.update(fa,pos);
                                     }
                                     else if(i!=fa.now_size){
                                         for(int jj = j; jj < i_son.now_size; jj++){
@@ -455,7 +453,6 @@ public:
                                         }
                                         fa.son[fa.now_size] = fa.son[fa.now_size + 1];
                                         node_river.update(i_son,fa.son[i]);
-                                        node_river.update(fa,pos);
                                     }
                                     else{
                                         for(int jj = 0; jj < j; jj++){
@@ -476,8 +473,8 @@ public:
                                         }
                                         fa.son[fa.now_size] = fa.son[fa.now_size + 1];
                                         node_river.update(pre_node,fa.son[i-1]);
-                                        node_river.update(fa,pos);
                                     }
+                                    if(pos==root) node_river.update(fa,pos);
                                     return;
                                 }
                                 else{
@@ -728,41 +725,54 @@ public:
         }
     }
 
-    void show() {
-        std::cout<<_size<<std::endl;
-        printf("sum: %d\n",show_node(root));
+    void clear(){
+        _size = 0;
+        node_river.initialise();
+        val_river.initialise();
     }
 
-    int show_node(int pos){
-        static int ans = 0;
+    void modify(const std::pair<Key, T> &val, T new_val) {
+        if (_size == 0) return;
         BPT_node rt;
-        node_river.read(rt,pos);
-
-        if(rt.is_leaf) {
-            std::cout << "leaf: \n";
-            std::cout << "pos: " << pos << " pre: " << rt.pre << " next: " << rt.next << " now_size: " << rt.now_size << std::endl;
-            for(int i = 0; i < rt.now_size; i++){
-                std::cout << rt.key[i] << " " ;
+        node_river.read(rt,root);
+        while(!rt.is_leaf){
+            int i = lower_key(val.first,rt);
+            if(i == rt.now_size || rt.key[i] != val.first) return;
+            node_river.read(rt,rt.son[i]);
+        }
+        int i = lower_key(val.first,rt);
+        if(i == rt.now_size || rt.key[i] != val.first) return;
+        int now = rt.son[i];
+        val_vec search;
+        while(now){
+            val_river.read(search,now);
+            if(val.second>search.val[search.now_size-1]) now = search.next;
+            else {
+                int pos = search.lower_val(val.second);
+                if(pos == search.now_size || search.val[pos] != val.second) return;
+                search.val[pos] = new_val;
+                val_river.update(search,now);
+                return;
             }
-            ans+=rt.now_size;
-            std::cout << std::endl;
-            return ans;
         }
-        std::cout << "pos: " << pos << " pre: " << rt.pre << " next: " << rt.next << " now_size: " << rt.now_size << std::endl;
-        for(int i = 0; i < rt.now_size; i++){
-            std::cout << rt.key[i] << " " ;
-        }
-        std::cout << std::endl;
-        for(int i = 0; i <= rt.now_size; i++){
-            if(rt.son[i]) show_node(rt.son[i]);
-        }
-        return ans;
     }
-    void clear(){}
 
-    void modify(const std::pair<Key, T> &val, T new_val) {}
-
-    std::pair<bool, T> find(const Key &key) {}
+    std::pair<bool, T> find(const Key &key) {
+        if (_size == 0) return std::make_pair(false, T());
+        BPT_node rt;
+        node_river.read(rt,root);
+        while(!rt.is_leaf){
+            int i = lower_key(key,rt);
+            if(i == rt.now_size || rt.key[i] != key) return std::make_pair(false, T());
+            node_river.read(rt,rt.son[i]);
+        }
+        int i = lower_key(key,rt);
+        if(i == rt.now_size || rt.key[i] != key) return std::make_pair(false, T());
+        int now = rt.son[i];
+        val_vec search;
+        val_river.read(search,now);
+        return std::make_pair(true,search.val[0]);
+    }
 };
 
 #endif //BPTREE_HPP_BPTREE2_HPP
