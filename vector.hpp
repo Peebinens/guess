@@ -2,7 +2,6 @@
 #define SJTU_VECTOR_HPP
 
 #include "exceptions.hpp"
-
 #include <climits>
 #include <cstddef>
 
