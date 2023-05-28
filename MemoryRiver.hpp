@@ -1,7 +1,3 @@
-//
-// Created by Libro on 2021/4/9.
-//
-
 #ifndef BPT_MEMORYRIVER_HPP
 #define BPT_MEMORYRIVER_HPP
 
@@ -109,6 +105,5 @@ public:
         file.close();
     }
 };
-
 
 #endif //BPT_MEMORYRIVER_HPP
