@@ -15,12 +15,12 @@ class BPTree {
 private:
     struct val_vec{
         int now_size,next;
+        T val[428]={0};
         val_vec():now_size(0),next(0){};
         val_vec(const T &ind):next(0) {
             now_size=1;
             val[0] = ind;
         }
-        T val[400]={0};
         int lower(const T &ind){
             if(ind > val[now_size - 1]) return now_size;
             int l = 0, r = now_size - 1, mid;
@@ -50,9 +50,9 @@ private:
     struct BPT_node{
         bool is_leaf;
         int son[L + 1] = {0};
-        int now_size, next, pre;
+        int now_size, next;
         Key key[M + 1];
-        BPT_node():is_leaf(false),now_size(0),next(0),pre(0){};
+        BPT_node():is_leaf(false),now_size(0),next(0){};
     };
 
     int root;
@@ -103,9 +103,7 @@ public:
         node_river.write_info(root,3);
     };
 
-    int size() {
-        return _size;
-    }
+    int size() { return _size; }
 
     void insert(const std::pair<Key, T> &val) {
         if(_size == 0){
@@ -127,7 +125,7 @@ public:
             new_node.key[0] = ret.second;
             new_node.son[0] = root;
             new_node.son[1] = ret.first;
-            new_node.next = new_node.pre = 0;
+            new_node.next = 0;
             root = node_river.write(new_node);
         }
     }
@@ -135,16 +133,16 @@ public:
         val_vec now_val;
         val_river.read(now_val,rt.son[pos]);
         if(now_val.val[now_val.now_size-1]>val){
-            if(now_val.now_size<400){
+            if(now_val.now_size<428){
                 now_val.insert(val);
                 val_river.update(now_val,rt.son[pos]);
             }
             else{
                 val_vec new_val;
-                for(int i = 200; i < 400; ++i) new_val.val[i - 400] = now_val.val[i];
-                new_val.now_size = 400;
-                now_val.now_size = 400;
-                if(val>now_val.val[199]) new_val.insert(val);
+                for(int i = 214; i < 428; ++i) new_val.val[i - 214] = now_val.val[i];
+                new_val.now_size = 214;
+                now_val.now_size = 214;
+                if(val>now_val.val[213]) new_val.insert(val);
                 else now_val.insert(val);
                 new_val.next=now_val.next;
                 now_val.next=val_river.write(new_val);
@@ -157,16 +155,16 @@ public:
             now_pos=now_val.next;
             val_river.read(now_val,now_pos);
             if(now_val.val[now_val.now_size-1]>val){
-                if(now_val.now_size<400){
+                if(now_val.now_size<428){
                     now_val.insert(val);
                     val_river.update(now_val,now_pos);
                 }
                 else{
                     val_vec new_val;
-                    for(int i = 200; i < 400; ++i) new_val.val[i - 200] = now_val.val[i];
-                    new_val.now_size = 200;
-                    now_val.now_size = 200;
-                    if(val>now_val.val[199]) new_val.insert(val);
+                    for(int i = 214; i < 428; ++i) new_val.val[i - 214] = now_val.val[i];
+                    new_val.now_size = 214;
+                    now_val.now_size = 214;
+                    if(val>now_val.val[213]) new_val.insert(val);
                     else now_val.insert(val);
                     new_val.next=now_val.next;
                     now_val.next=val_river.write(new_val);
@@ -175,7 +173,7 @@ public:
                 return;
             }
         }
-        if(now_val.now_size<400){
+        if(now_val.now_size<428){
             now_val.val[now_val.now_size++] = val;
             val_river.update(now_val,now_pos);
             return;
@@ -184,7 +182,6 @@ public:
         now_val.next = val_river.write(new_val);
         val_river.update(now_val,now_pos);
     }
-
     std::pair<int,Key> insert(const Key & ind, const T & val, int & pos){
         BPT_node rt;
         node_river.read(rt,pos);
@@ -213,15 +210,8 @@ public:
                     new_node.is_leaf = true;
                     new_node.now_size = M-mid+1;
                     rt.now_size = mid;
-                    new_node.pre = pos;
                     new_node.next = rt.next;
                     ret.first=node_river.write(new_node);
-                    if(rt.next) {
-                        BPT_node next_node;
-                        node_river.read(next_node, rt.next);
-                        next_node.pre = ret.first;
-                        node_river.update(next_node, rt.next);
-                    }
                     rt.next = ret.first;
                     ret.second = new_node.key[0];
                 }
@@ -250,7 +240,6 @@ public:
             new_node.son[M-mid] = rt.son[M];
             new_node.now_size = M-mid;
             rt.now_size = mid - 1;
-            new_node.pre = pos;
             ret.first=rt.next=node_river.write(new_node);
             BPT_node tmp;
             node_river.read(tmp,new_node.son[0]);
@@ -568,7 +557,6 @@ public:
         }
         else node_river.update(fa,pos);
     }
-
     void remove(const std::pair<Key, T> &val) {
         if (_size == 0) return;
         BPT_node rt;
