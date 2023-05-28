@@ -141,7 +141,7 @@ public:
                 val_vec new_val;
                 for (int i = 200; i < 400; ++i) new_val.val[i - 200] = now_val.val[i];
                 new_val.now_size = 200;
-                now_val.now_size = 20;
+                now_val.now_size = 200;
                 if (val > now_val.val[199]) new_val.insert(val);
                 else now_val.insert(val);
                 new_val.next = now_val.next;
