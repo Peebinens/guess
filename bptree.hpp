@@ -117,7 +117,7 @@ private:
             now_size=1;
             val[0] = ind;
         }
-        T val[100]={0};
+        T val[200]={0};
         int lower(const T &ind){
             if(ind > val[now_size - 1]) return now_size;
             int l = 0, r = now_size - 1, mid;
@@ -232,16 +232,16 @@ public:
         val_vec now_val;
         val_river.read(now_val,rt.son[pos]);
         if(now_val.val[now_val.now_size-1]>val){
-            if(now_val.now_size<100){
+            if(now_val.now_size<200){
                 now_val.insert(val);
                 val_river.update(now_val,rt.son[pos]);
             }
             else{
                 val_vec new_val;
-                for(int i = 50; i < 100; ++i) new_val.val[i - 50] = now_val.val[i];
-                new_val.now_size = 50;
-                now_val.now_size = 50;
-                if(val>now_val.val[49]) new_val.insert(val);
+                for(int i = 100; i < 200; ++i) new_val.val[i - 100] = now_val.val[i];
+                new_val.now_size = 100;
+                now_val.now_size = 100;
+                if(val>now_val.val[99]) new_val.insert(val);
                 else now_val.insert(val);
                 new_val.next=now_val.next;
                 now_val.next=val_river.write(new_val);
@@ -254,16 +254,16 @@ public:
             now_pos=now_val.next;
             val_river.read(now_val,now_pos);
             if(now_val.val[now_val.now_size-1]>val){
-                if(now_val.now_size<100){
+                if(now_val.now_size<200){
                     now_val.insert(val);
                     val_river.update(now_val,now_pos);
                 }
                 else{
                     val_vec new_val;
-                    for(int i = 50; i < 100; ++i) new_val.val[i - 50] = now_val.val[i];
-                    new_val.now_size = 50;
-                    now_val.now_size = 50;
-                    if(val>now_val.val[49]) new_val.insert(val);
+                    for(int i = 100; i < 200; ++i) new_val.val[i - 100] = now_val.val[i];
+                    new_val.now_size = 100;
+                    now_val.now_size = 100;
+                    if(val>now_val.val[99]) new_val.insert(val);
                     else now_val.insert(val);
                     new_val.next=now_val.next;
                     now_val.next=val_river.write(new_val);
@@ -272,7 +272,7 @@ public:
                 return;
             }
         }
-        if(now_val.now_size<100){
+        if(now_val.now_size<200){
             now_val.val[now_val.now_size++] = val;
             val_river.update(now_val,now_pos);
             return;
