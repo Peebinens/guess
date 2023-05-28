@@ -49,25 +49,7 @@ namespace sjtu {
             }
             free(tmp);
 		}
-
-        void quick_sort(int l, int r){
-        	if(l >= r) return;
-        	int i = l, j = r, mid = (l + r) >> 1;
-        	T tmp = data[mid];
-            while(i <= j) {
-                while (data[i] < tmp) i++;
-                while (data[j] > tmp) j--;
-                if (i <= j) {
-                    T t = data[i];
-                    data[i] = data[j];
-                    data[j] = t;
-                    i++;
-                    j--;
-                }
-            }
-            quick_sort(l, j);
-            quick_sort(i, r);
-        }
+        
     public:
         /**
          * TODO
@@ -562,10 +544,7 @@ namespace sjtu {
             data[length].~T();
             if (length<max_lenth/4) halfspace();
         }
-
-        void sort(){
-            quick_sort(0,length-1);
-        }
+        
     };
 
 
