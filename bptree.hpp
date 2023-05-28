@@ -1,15 +1,9 @@
 #ifndef BPTREE_HPP_BPTREE2_HPP
 #define BPTREE_HPP_BPTREE2_HPP
 
-#include <fstream>
 #include <string>
 #include "vector.hpp"
 #include "MemoryRiver.hpp"
-
-using std::string;
-using std::fstream;
-using std::ifstream;
-using std::ofstream;
 
 template<class Key, class T, int M = 100, int L = 100>
 class BPTree {
