@@ -111,10 +111,13 @@ template<class Key, class T, int M = 100, int L = 100>
 class BPTree {
 private:
     struct val_vec{
-        int num = 0;
-        int now_size = 0;
-        int next = 0;
-        T val[200]={0};
+        int now_size,next;
+        val_vec():now_size(0),next(0){};
+        val_vec(const T &ind):next(0) {
+            now_size=1;
+            val[0] = ind;
+        }
+        T val[100]={0};
         int lower(const T &ind){
             if(ind > val[now_size - 1]) return now_size;
             int l = 0, r = now_size - 1, mid;
@@ -135,12 +138,11 @@ private:
             int pos = lower(ind);
             if(pos == now_size) return -1;
             if(val[pos] != ind) return -2;
-            for(int i = pos; i < now_size - 1; ++i) val[i] = val[i + 1];
             --now_size;
+            for(int i = pos; i < now_size; ++i) val[i] = val[i + 1];
             return 0;
         }
-        val_vec():num(0),now_size(0),next(0){};
-        val_vec(const T &ind):num(1),now_size(1),next(0) { val[0] = ind; }
+
     };
     struct BPT_node{
         bool is_leaf;
@@ -230,16 +232,16 @@ public:
         val_vec now_val;
         val_river.read(now_val,rt.son[pos]);
         if(now_val.val[now_val.now_size-1]>val){
-            if(now_val.now_size<200){
+            if(now_val.now_size<100){
                 now_val.insert(val);
                 val_river.update(now_val,rt.son[pos]);
             }
             else{
                 val_vec new_val;
-                for(int i = 100; i < 200; ++i) new_val.val[i - 100] = now_val.val[i];
-                new_val.now_size = 100;
-                now_val.now_size = 100;
-                if(val>now_val.val[99]) new_val.insert(val);
+                for(int i = 50; i < 100; ++i) new_val.val[i - 50] = now_val.val[i];
+                new_val.now_size = 50;
+                now_val.now_size = 50;
+                if(val>now_val.val[49]) new_val.insert(val);
                 else now_val.insert(val);
                 new_val.next=now_val.next;
                 now_val.next=val_river.write(new_val);
@@ -247,30 +249,30 @@ public:
             }
             return;
         }
-        int now_pos;
+        int now_pos=rt.son[pos];
         while(now_val.next){
             now_pos=now_val.next;
             val_river.read(now_val,now_pos);
             if(now_val.val[now_val.now_size-1]>val){
-                if(now_val.now_size<200){
+                if(now_val.now_size<100){
                     now_val.insert(val);
-                    val_river.update(now_val,rt.son[pos]);
+                    val_river.update(now_val,now_pos);
                 }
                 else{
                     val_vec new_val;
-                    for(int i = 100; i < 200; ++i) new_val.val[i - 100] = now_val.val[i];
-                    new_val.now_size = 100;
-                    now_val.now_size = 100;
-                    if(val>now_val.val[99]) new_val.insert(val);
+                    for(int i = 50; i < 100; ++i) new_val.val[i - 50] = now_val.val[i];
+                    new_val.now_size = 50;
+                    now_val.now_size = 50;
+                    if(val>now_val.val[49]) new_val.insert(val);
                     else now_val.insert(val);
                     new_val.next=now_val.next;
                     now_val.next=val_river.write(new_val);
-                    val_river.update(now_val,rt.son[pos]);
+                    val_river.update(now_val,now_pos);
                 }
                 return;
             }
         }
-        if(now_val.now_size<200){
+        if(now_val.now_size<100){
             now_val.val[now_val.now_size++] = val;
             val_river.update(now_val,now_pos);
             return;
@@ -286,9 +288,7 @@ public:
         int i;
         if(rt.is_leaf){
             i = lower_key(ind,rt);
-            if(i < rt.now_size && ind == rt.key[i]) {
-                val_insert(rt,i,val);
-            }
+            if(i < rt.now_size && ind == rt.key[i]) val_insert(rt,i,val);
             else{
                 for(int j = rt.now_size; j > i; j--){
                     rt.key[j] = rt.key[j-1];
@@ -498,7 +498,8 @@ public:
                             return;
                         }
                     }
-
+                    else val_river.update(search,now);
+                    return;
                 }
                 else if(ret == -1){
                     pre_pos = now;
@@ -708,13 +709,15 @@ public:
                             return;
                         }
                     }
+                    else val_river.update(search,now);
+                    return;
                 }
                 else if(ret == -1){
                     pre_pos = now;
                     pre_val = search;
                     now = search.next;
                 }
-                else break;
+                else return;
             }
             return;
         }
