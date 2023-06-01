@@ -13,7 +13,6 @@ private:
         T val[400] = {0};
 
         val_vec() : now_size(0), next(0) {};
-
         val_vec(const T &ind) : next(0) {
             now_size = 1;
             val[0] = ind;
@@ -36,7 +35,6 @@ private:
             val[pos] = ind;
             ++now_size;
         }
-
         int erase(const T &ind) {
             int pos = lower(ind);
             if (pos == now_size) return -1;
@@ -49,16 +47,15 @@ private:
 
     struct BPT_node {
         bool is_leaf;
-        int son[L + 1] = {0};
+        int son[std::max(M, L) + 1] = {0};
         int now_size, next;
-        Key key[M + 1];
+        Key key[std::max(M, L) + 1];
 
         BPT_node() : is_leaf(false), now_size(0), next(0) {};
     };
 
     int root;
     int _size;
-
     MemoryRiver<BPT_node, 4> node_river;
     MemoryRiver<val_vec> val_river;
 
@@ -72,7 +69,6 @@ private:
         }
         return l;
     }
-
     int lower_key(const Key &ind, const BPT_node &rt) {
         if (ind > rt.key[rt.now_size - 1]) return rt.now_size;
         int l = 0, r = rt.now_size - 1, mid;
@@ -129,7 +125,6 @@ public:
             root = node_river.write(new_node);
         }
     }
-
     void val_insert(BPT_node &rt, int pos, const T &val) {
         val_vec now_val;
         val_river.read(now_val, rt.son[pos]);
@@ -181,7 +176,6 @@ public:
         now_val.next = val_river.write(new_val);
         val_river.update(now_val, now_pos);
     }
-
     std::pair<int, Key> insert(const Key &ind, const T &val, int &pos) {
         BPT_node rt;
         node_river.read(rt, pos);
@@ -248,7 +242,23 @@ public:
         node_river.update(rt, pos);
         return ret;
     }
-
+    
+    std::pair<bool, T> find(const Key &key) {
+        if (_size == 0) return std::make_pair(false, T());
+        BPT_node rt;
+        node_river.read(rt, root);
+        while (!rt.is_leaf) {
+            int i = lower_key(key, rt);
+            if (i == rt.now_size || rt.key[i] != key) return std::make_pair(false, T());
+            node_river.read(rt, rt.son[i]);
+        }
+        int i = lower_key(key, rt);
+        if (i == rt.now_size || rt.key[i] != key) return std::make_pair(false, T());
+        int now = rt.son[i];
+        val_vec search;
+        val_river.read(search, now);
+        return std::make_pair(true, search.val[0]);
+    }
     sjtu::vector<T> Find(const Key &key) {
         sjtu::vector<T> ret;
         if (_size == 0) return ret;
@@ -544,7 +554,6 @@ public:
         }
         node_river.update(i_son, fa.son[i]);
     }
-
     void remove(const std::pair<Key, T> &val) {
         if (_size == 0) return;
         BPT_node rt;
@@ -631,23 +640,6 @@ public:
                 return;
             }
         }
-    }
-
-    std::pair<bool, T> find(const Key &key) {
-        if (_size == 0) return std::make_pair(false, T());
-        BPT_node rt;
-        node_river.read(rt, root);
-        while (!rt.is_leaf) {
-            int i = lower_key(key, rt);
-            if (i == rt.now_size || rt.key[i] != key) return std::make_pair(false, T());
-            node_river.read(rt, rt.son[i]);
-        }
-        int i = lower_key(key, rt);
-        if (i == rt.now_size || rt.key[i] != key) return std::make_pair(false, T());
-        int now = rt.son[i];
-        val_vec search;
-        val_river.read(search, now);
-        return std::make_pair(true, search.val[0]);
     }
 };
 
